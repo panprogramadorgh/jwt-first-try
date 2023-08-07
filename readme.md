@@ -39,3 +39,11 @@ main({
   url: "http://localhost:3000/api/auth/login",
 });
 ```
+
+---
+
+## Actualizacion de ultima hora !
+
+### Implementacion de ruta protegida por usuario (JWT)
+
+Viaja a la ruta `/api/profile` y comprobaras que no te dejara entrar, a no ser que agreges el header `token` con el token generado al iniciar sesion a nombre de un usuario en la ruta `/api/auth/login`. Ese token te brinda acceso a una propiedad user en el objeto request de las rutas get generadas en `/api/profile`

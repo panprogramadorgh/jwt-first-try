@@ -1,6 +1,7 @@
 import { Router } from "express";
 import UserModel from "../models/user.model.js";
 import { hash, compare } from "../utils/bcryptjs.js";
+import jwt from "jsonwebtoken";
 
 const authRouter = Router();
 
@@ -15,7 +16,10 @@ authRouter.post("/register", async (req, res) => {
   const newUser = new UserModel({ name, email, password: hash(password) });
   try {
     const document = await newUser.save();
-    res.json({ message: "Documento insertado", document });
+    res.json({
+      message: "Documento insertado",
+      document,
+    });
   } catch {
     res.status(422).json({
       error:
@@ -35,13 +39,20 @@ authRouter.post("/login", async (req, res) => {
     // TODO: Comprobacion de password
     const [user] = matchingEmailUsers;
     const passwordIsCorrect = compare(password, user.password);
+
     if (passwordIsCorrect) {
-      return res.status(200).json({ message: "Logeado con exito" });
+      // TODO: En este caso extraProps hace referencia a las propiedades ocultas provenientes de la base de datos. Al obtener los usuarios, spongamos, tendria que dar informacion recortada
+      const token = jwt.sign({ ...user, extraProps: {} }, "secreto", {
+        expiresIn: 500,
+      });
+
+      return res.status(200).json({ message: "Logeado con exito", token });
     }
     throw new LoginError("El email o la contraseña es invalido", 422);
 
     //
   } catch (error) {
+    console.log(error);
     if (error instanceof LoginError) {
       return res.status(error.status).json({ error: error.message });
     }
