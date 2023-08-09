@@ -30,7 +30,8 @@ indexRouter.get("/users/:userid", async (req, res) => {
 });
 
 indexRouter.get("/profile", checkToken, (req, res) => {
-  res.json(req.user);
+  if (!req.user) return res.status(401).json({ error: "No autorizado" });
+  res.status(200).json({ message: "Autorizado" });
 });
 
 export default indexRouter;
